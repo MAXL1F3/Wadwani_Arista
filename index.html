@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Arista - Rapid Response Drones</title>
+
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#070812;
+  --card:#0f1720;
+  --muted:#9aa7bd;
+  --accent:#3db5ff;
+  --accent2:#7b61ff;
+  --glass: rgba(255,255,255,0.04);
+  --glass-2: rgba(255,255,255,0.02);
+  --neon: 0 0 18px rgba(61,181,255,0.12),0 0 40px rgba(61,181,255,0.06);
+  --glass-border: rgba(255,255,255,0.06);
+}
+
+/* Reset */
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  background: radial-gradient(1200px 500px at 10% 10%, rgba(61,181,255,0.03), transparent 8%),
+              linear-gradient(180deg,#06060a 0%, #07101a 100%);
+  color:#dbeafe;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  overflow-x:hidden;
+}
+
+/* Loading Screen */
+#loader {
+  position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(180deg,#02030a 0%, rgba(2,6,23,0.8) 70%);
+  z-index:9999;flex-direction:column;gap:18px;
+}
+.loader-drone{
+  width:84px;height:44px;background:transparent;filter:drop-shadow(0 10px 30px rgba(59,181,255,0.12));
+  transform-origin:center;
+  animation:loader-bob 1.8s ease-in-out infinite;
+  display:inline-block;
+}
+@keyframes loader-bob{
+  0%{transform:translateY(0)}
+ 50%{transform:translateY(-12px)}
+ 100%{transform:translateY(0)}
+}
+.loader-text{color:var(--muted);font-size:14px;letter-spacing:0.6px}
+
+/* Top Nav */
+.nav{
+  width:100%;position:fixed;top:14px;left:0;z-index:800;display:flex;justify-content:center;
+}
+.nav-inner{width:1100px;max-width:94%;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.brand{display:flex;align-items:center;gap:14px}
+.logo-svg{width:44px;height:44px;display:inline-block}
+.brand h1{font-size:18px;font-weight:700;color:rgba(255,255,255,0.95)}
+nav.links{display:flex;gap:14px;align-items:center}
+nav.links a{color:var(--muted);text-decoration:none;padding:8px 12px;border-radius:8px;font-weight:600}
+nav.links a:hover{color:#fff;background:linear-gradient(90deg, rgba(61,181,255,0.06), rgba(123,97,255,0.04));box-shadow:var(--neon)}
+.btn-ghost{padding:8px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);font-weight:700;color:#dbeafe}
+.toggle{cursor:pointer;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.03)}
+
+/* Hero */
+.hero{
+  margin-top:86px;padding:72px 0 120px;position:relative;overflow:visible;
+}
+.hero-inner{width:1100px;max-width:94%;display:flex;gap:36px;align-items:center}
+.hero-left{flex:1}
+.kicker{display:inline-block;background:linear-gradient(90deg,var(--accent),var(--accent2));padding:6px 12px;border-radius:999px;color:#001022;font-weight:700;font-size:12px;box-shadow:var(--neon)}
+h2.title{font-size:44px;line-height:1.02;margin:18px 0;color:#e6f6ff;text-shadow:0 8px 40px rgba(61,181,255,0.08)}
+.lead{color:var(--muted);max-width:640px;font-size:16px}
+.cta-row{margin-top:22px;display:flex;gap:12px;align-items:center}
+.cta-primary{background:linear-gradient(90deg,var(--accent),var(--accent2));padding:14px 22px;border-radius:12px;color:#001022;font-weight:800;text-decoration:none;box-shadow:0 10px 40px rgba(123,97,255,0.12)}
+.cta-secondary{padding:12px 18px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);color:var(--muted);text-decoration:none}
+
+/* Parallax background layers (decorative) */
+.parallax{
+  position:absolute;inset:0;pointer-events:none;z-index:2;opacity:0.35
+}
+.parallax .layer{position:absolute;width:1600px;height:600px;background-repeat:no-repeat;background-size:cover;filter:blur(8px);transform:translate3d(0,0,0)}
+
+/* Right Panel - mockup + counters */
+.hero-right{width:460px;flex-shrink:0;position:relative}
+.device{
+  background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+  border-radius:18px;padding:18px;border:1px solid rgba(255,255,255,0.04);box-shadow:0 14px 38px rgba(2,6,23,0.7);
+  backdrop-filter: blur(6px);
+}
+.mock-screen{height:320px;border-radius:12px;overflow:hidden;background:linear-gradient(180deg,#001022 0%, #001a34 100%);position:relative}
+.mock-topbar{display:flex;gap:10px;padding:12px 14px;align-items:center}
+.dot{width:10px;height:10px;border-radius:50%}
+.dot.red{background:#ff6b6b}
+.dot.y{background:#ffd666}
+.dot.green{background:#48ff9a}
+.mock-content{padding:10px 14px;color:var(--muted);font-size:13px;display:flex;gap:12px}
+.feed{flex:1;display:flex;flex-direction:column;gap:8px}
+.feed .row{display:flex;justify-content:space-between;align-items:center}
+.stat{font-size:18px;color:#e6f6ff;font-weight:700}
+
+/* Animated Counters */
+.counters{display:flex;gap:12px;margin-top:16px}
+.counter{flex:1;background:linear-gradient(90deg, rgba(61,181,255,0.04), rgba(123,97,255,0.03));padding:12px;border-radius:10px;text-align:center}
+.counter .num{font-size:20px;font-weight:800;color:#e7fbff}
+.counter .lbl{font-size:12px;color:var(--muted);margin-top:6px}
+
+/* Features Section */
+.section{padding:60px 0}
+.container{width:1100px;max-width:94%;margin:0 auto}
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:18px}
+.feature-card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:20px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+.feature-card h3{font-size:16px;margin-bottom:8px}
+
+/* Contact Section */
+.contact{display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap}
+.contact .panel{flex:1;min-width:260px;padding:20px;border-radius:12px;background:linear-gradient(180deg,#071022, #06101a);border:1px solid rgba(255,255,255,0.03)}
+
+/* Footer */
+footer{padding:28px 0;text-align:center;color:var(--muted);font-size:13px}
+
+/* Drone 3D-ish SVG (in hero) */
+#hero-drone{
+  position:absolute;right:28px;top:36px;width:320px;height:180px;z-index:6;pointer-events:none;
+  transform-origin:center;
+  animation:drone-hover 4s ease-in-out infinite;
+  filter:drop-shadow(0 20px 50px rgba(61,181,255,0.08));
+}
+@keyframes drone-hover{
+  0%{transform:translateY(0) rotateZ(-4deg)}
+ 50%{transform:translateY(-14px) rotateZ(6deg)}
+ 100%{transform:translateY(0) rotateZ(-4deg)}
+}
+
+/* 3D propeller spin via JS class */
+.prop-spin{animation:prop-spin 0.4s linear infinite}
+@keyframes prop-spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+
+/* Responsive */
+@media (max-width:980px){
+  .hero-inner{flex-direction:column-reverse;align-items:flex-start}
+  .hero-right{width:100%}
+  .features-grid{grid-template-columns:repeat(1,1fr)}
+}
+</style>
+</head>
+<body>
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="loader-drone" aria-hidden="true">
+    <!-- simple svg drone icon -->
+    <svg width="84" height="44" viewBox="0 0 84 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="2" y="18" width="80" height="8" rx="4" fill="#0ea5ff" opacity="0.18"/>
+      <circle cx="16" cy="12" r="6" fill="#7b61ff"/>
+      <circle cx="68" cy="12" r="6" fill="#3db5ff"/>
+      <rect x="34" y="8" width="16" height="12" rx="3" fill="#e6f6ff" opacity="0.9"/>
+    </svg>
+  </div>
+  <div class="loader-text">Arista — Initializing prototype</div>
+</div>
+
+<!-- NAV -->
+<div class="nav" role="navigation">
+  <div class="nav-inner">
+    <div class="brand">
+      <!-- Inline SVG Logo -->
+      <div class="logo-svg" aria-hidden="true">
+        <svg viewBox="0 0 48 48" width="44" height="44" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs><linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#3db5ff"/><stop offset="1" stop-color="#7b61ff"/></linearGradient></defs>
+          <rect x="2" y="2" width="44" height="44" rx="10" fill="url(#g)" opacity="0.12"/>
+          <path d="M12 30 L20 20 L28 26 L36 16" stroke="url(#g)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div>
+        <h1>Arista</h1>
+        <div style="font-size:11px;color:var(--muted)">Public Safety Drone Systems</div>
+      </div>
+    </div>
+
+    <nav class="links" aria-label="Main Navigation">
+      <a href="#about">About</a>
+      <a href="#features">Features</a>
+      <a href="#contact">Contact</a>
+      <button class="toggle" id="themeToggle" title="Toggle dark mode">🌗</button>
+    </nav>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero" aria-label="Hero">
+  <div class="parallax" aria-hidden="true">
+    <div class="layer" style="left:-200px;top:10px;background-image:url('https://images.unsplash.com/photo-1484704849700-f032a568e944?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=3a8a5f1b6c0a3f45f7bf5f7a9c9d8d0c');transform:translateZ(0) scale(1.05)"></div>
+    <div class="layer" style="right:-300px;bottom:40px;background-image:url('https://images.unsplash.com/photo-1549880338-65ddcdfd017b?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=38f5f6c1d8e7b0d1e7f2a4b3c5d6e7f8');opacity:0.18;transform:scale(1.2)"></div>
+  </div>
+
+  <div class="hero-inner container">
+    <div class="hero-left">
+      <span class="kicker">Govt & Defence • Pilot Ready</span>
+      <h2 class="title">AI-Powered Rapid Response Drone Systems for Public Safety</h2>
+      <p class="lead">Instant situational awareness, live feeds, coordinated response and safe EOD support. Designed for police, disaster units, and municipal agencies.</p>
+
+      <div class="cta-row">
+        <a class="cta-primary" href="#contact">Request Demo</a>
+        <a class="cta-secondary" href="#features">See Features</a>
+      </div>
+
+      <div style="margin-top:18px;display:flex;gap:12px;align-items:center">
+        <div style="background:linear-gradient(90deg,var(--accent),var(--accent2));padding:8px 10px;border-radius:10px;font-weight:800;color:#001022">Pilot-ready</div>
+        <div style="color:var(--muted)">Trusted by authorities (pilot MoU pending)</div>
+      </div>
+    </div>
+
+    <div class="hero-right">
+      <div class="device">
+        <div class="mock-screen" id="mockScreen">
+          <div class="mock-topbar">
+            <div class="dot red"></div><div class="dot y"></div><div class="dot green"></div>
+            <div style="flex:1"></div>
+            <div style="color:var(--muted);font-size:12px">Live • City Sector 12</div>
+          </div>
+          <div class="mock-content">
+            <div class="feed">
+              <div class="row"><div style="color:var(--muted)">Drone 1</div><div class="stat">On Scene</div></div>
+              <div class="row"><div style="color:var(--muted)">Drone 2</div><div class="stat">60s ETA</div></div>
+              <div class="row"><div style="color:var(--muted)">Operator</div><div class="stat">Connected</div></div>
+            </div>
+            <svg style="width:110px;height:110px" viewBox="0 0 100 100" id="miniDrone" aria-hidden="true">
+              <g transform="translate(10,10) scale(0.8)">
+                <ellipse cx="40" cy="60" rx="28" ry="10" fill="#001a34" opacity="0.7"/>
+                <rect x="28" y="36" width="26" height="14" rx="3" fill="#0ea5ff" opacity="0.14"/>
+                <g id="props">
+                  <rect x="8" y="28" width="8" height="2" fill="#7b61ff" rx="1"/>
+                  <rect x="64" y="28" width="8" height="2" fill="#3db5ff" rx="1"/>
+                </g>
+              </g>
+            </svg>
+          </div>
+        </div>
+
+        <div class="counters">
+          <div class="counter"><div class="num" data-target="120">0</div><div class="lbl">Deployments</div></div>
+          <div class="counter"><div class="num" data-target="90">0</div><div class="lbl">Sec-to-Scene</div></div>
+          <div class="counter"><div class="num" data-target="30">0</div><div class="lbl">Partners</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- decorative 3D drone svg -->
+  <div id="hero-drone" aria-hidden="true">
+    <!-- composite svg drone with 'propellers' groups to spin -->
+    <svg viewBox="0 0 300 160" width="320" height="180" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="bgG" x1="0" x2="1"><stop offset="0" stop-color="#3db5ff"/><stop offset="1" stop-color="#7b61ff"/></linearGradient>
+      </defs>
+      <g transform="translate(20,20)">
+        <rect x="10" y="50" rx="14" ry="14" width="220" height="36" fill="url(#bgG)" opacity="0.08"/>
+        <g id="drone-body" transform="translate(20,0)">
+          <ellipse cx="80" cy="32" rx="46" ry="18" fill="#0b2a40"/>
+          <rect x="60" y="20" width="40" height="24" rx="6" fill="url(#bgG)" opacity="0.18"/>
+          <!-- props -->
+          <g id="propL" transform="translate(-6,-6)">
+            <circle cx="10" cy="10" r="10" fill="#7b61ff" />
+            <rect x="8" y="6" width="24" height="2" fill="#fff" opacity="0.6" rx="1" />
+          </g>
+          <g id="propR" transform="translate(170,-6)">
+            <circle cx="10" cy="10" r="10" fill="#3db5ff" />
+            <rect x="8" y="6" width="24" height="2" fill="#fff" opacity="0.6" rx="1" />
+          </g>
+        </g>
+      </g>
+    </svg>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features" class="section">
+  <div class="container">
+    <h2 style="color:#e6f6ff">Core Capabilities</h2>
+    <p style="color:var(--muted);margin-top:8px">Designed for safe, auditable, and fast emergency response with human oversight.</p>
+
+    <div class="features-grid" style="margin-top:18px">
+      <div class="feature-card">
+        <h3>Instant Multi-Drone Dispatch</h3>
+        <p style="color:var(--muted)">Automated launches with redundancy to ensure coverage.</p>
+      </div>
+      <div class="feature-card">
+        <h3>Secure Live Feeds</h3>
+        <p style="color:var(--muted)">Encrypted real-time streaming to control centers.</p>
+      </div>
+      <div class="feature-card">
+        <h3>Non-Lethal Deterrents</h3>
+        <p style="color:var(--muted)">Safe LED deterrents and police-authorized marking only.</p>
+      </div>
+      <div class="feature-card">
+        <h3>Hybrid EOD Mode</h3>
+        <p style="color:var(--muted)">Aerial-to-ground transition for precise manipulation in safe mode.</p>
+      </div>
+      <div class="feature-card">
+        <h3>Audit & Compliance</h3>
+        <p style="color:var(--muted)">Immutable logs, operator verification, and RBAC controls.</p>
+      </div>
+      <div class="feature-card">
+        <h3>Integrated App</h3>
+        <p style="color:var(--muted)">Citizen app for verified SOS and vetted volunteer alerts.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" class="section">
+  <div class="container">
+    <h2>Contact & Demo</h2>
+    <div style="margin-top:12px;color:var(--muted)">Reach out for pilots, demos, or procurement discussions.</div>
+
+    <div class="contact" style="margin-top:18px">
+      <div class="panel">
+        <h3 style="margin-bottom:8px">Get a Demo</h3>
+        <p style="color:var(--muted)">We provide on-site demos for government & agency pilots.</p>
+        <p style="margin-top:10px"><strong>Email:</strong> <a href="mailto:sec24ee067@sairamtap.edu.in" style="color:var(--accent)">sec24ee067@sairamtap.edu.in</a></p>
+        <p><strong>LinkedIn:</strong> <a href="www.linkedin.com/in/arjun-krishna-k-s-aa00a1327" target="_blank" style="color:var(--accent)">Your Profile</a></p>
+      </div>
+
+      <div class="panel">
+        <h3 style="margin-bottom:8px">Office</h3>
+        <p style="color:var(--muted)">City: Sai Ram Engineering Collage, India</p>
+        <p style="color:var(--muted)">Available for national pilots and training programs.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div style="display:flex;justify-content:center;gap:12px;align-items:center">
+      <div style="width:28px;height:28px;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:6px"></div>
+      <div style="color:var(--muted)">© <strong>Arista</strong> 2025 • All rights reserved</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* --- Loader --- */
+window.addEventListener('load', ()=> {
+  setTimeout(()=>{document.getElementById('loader').style.display='none'; initCounters(); spinProps();}, 700);
+});
+
+/* --- Dark/Light toggle (keeps futurist theme; simple example toggling brightness) --- */
+const themeBtn = document.getElementById('themeToggle');
+themeBtn.addEventListener('click', ()=>{
+  const body = document.body;
+  if(body.style.filter){
+    body.style.filter=''; themeBtn.textContent='🌗';
+  } else {
+    body.style.filter='brightness(1.04) contrast(1.02)';
+    themeBtn.textContent='☀️';
+  }
+});
+
+/* --- Animated Counters --- */
+function initCounters(){
+  const counters = document.querySelectorAll('.num');
+  counters.forEach(c=>{
+    const target = +c.getAttribute('data-target');
+    let cur = 0;
+    const step = Math.ceil(target/80);
+    const t = setInterval(()=>{
+      cur += step;
+      if(cur >= target){ c.textContent = target; clearInterval(t); }
+      else c.textContent = cur;
+    }, 18);
+  });
+}
+
+/* --- Propeller spin simulation (add class toggle) --- */
+function spinProps(){
+  const props = document.querySelectorAll('#propL, #propR, #props');
+  props.forEach(p=>{
+    // add rotation via CSS transform in JS loop for a subtle spin
+    let angle = 0;
+    setInterval(()=>{
+      angle += 40;
+      p.style.transform = `rotate(${angle}deg)`;
+    }, 120);
+  });
+}
+
+/* --- Parallax subtle movement on mouse move --- */
+document.addEventListener('mousemove', (e)=>{
+  const px = (e.clientX / window.innerWidth) - 0.5;
+  const py = (e.clientY / window.innerHeight) - 0.5;
+  const layers = document.querySelectorAll('.parallax .layer');
+  layers.forEach((layer,i)=>{
+    const depth = (i+1) * 6;
+    const x = px * depth;
+    const y = py * depth;
+    layer.style.transform = `translate3d(${x}px,${y}px,0)`;
+  });
+});
+
+/* --- small CSS-driven hero drone fly-across effect (re-run) --- */
+(function floatingDrone(){
+  const heroDrone = document.getElementById('hero-drone');
+  // subtle left-right drift using GSAP-like timing without library
+  let dir = 1, pos = 0;
+  setInterval(()=>{
+    pos += 0.3 * dir;
+    if(pos > 12 || pos < -12) dir *= -1;
+    heroDrone.style.transform = `translateY(${Math.sin(pos/4)*8}px) rotate(${Math.sin(pos/8)*4}deg)`;
+  },40);
+})();
+
+/* --- Smooth scroll for nav links --- */
+document.querySelectorAll('nav.links a').forEach(a=>{
+  a.addEventListener('click', (ev)=>{
+    ev.preventDefault();
+    const tgt = document.querySelector(a.getAttribute('href'));
+    if(tgt){ tgt.scrollIntoView({behavior:'smooth', block:'start'}); }
+  });
+});
+</script>
+
+</body>
+</html>
